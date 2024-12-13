@@ -97,7 +97,11 @@ def generate():
     behavior_pack_name = f"structure{structure_number}"
     create_behavior_pack_structure(BEHAVIOR_PACK_PATH, behavior_pack_name, mcfunction_path)
 
-    return jsonify({"success": True, "behavior_pack": behavior_pack_name})
+    # Automatically send the mcfunction file for download
+    return send_file(mcfunction_path, as_attachment=True, download_name='building.mcfunction')
+
+
+
 @app.route('/download/<pack_name>', methods=['GET'])
 def download(pack_name):
     folder_path = os.path.join(BEHAVIOR_PACK_PATH, pack_name)
