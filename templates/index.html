@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Building Generator</title>
+    <style>
+        body {
+            font-family: 'Minecraftia', sans-serif;
+            background-color: #3c3c3c;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #f0f035;
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            text-align: left;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            font-family: 'Minecraftia', sans-serif;
+        }
+
+        button {
+            background-color: #2d802f;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3d9940;
+        }
+
+        .upload-section {
+            border: 2px dashed #555;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .upload-section:hover {
+            border-color: #777;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #f0f035;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minecraft Building Generator</h1>
+    <div class="container">
+        <form id="building-form" action="/generate" method="POST" enctype="multipart/form-data">
+            <label for="floor_maps">Upload Floor Map Images (e.g., 1.png, 2.png):</label>
+            <div class="upload-section">
+                <input type="file" id="floor_maps" name="floor_maps" accept="image/png" multiple required>
+            </div>
+
+            <label for="wall_height">Wall Height (in blocks):</label>
+            <input type="number" id="wall_height" name="wall_height" value="4" min="1" required>
+
+            <label for="door_height">Door Height (in blocks):</label>
+            <input type="number" id="door_height" name="door_height" value="2" min="2" required>
+
+            <label for="generate_ceiling">Generate Ceiling for Single Image:</label>
+            <input type="checkbox" id="generate_ceiling" name="generate_ceiling" checked>
+
+            <button type="submit">Generate Behavior Pack</button>
+        </form>
+
+        <div id="response" style="margin-top: 20px;"></div>
+    </div>
+
+    <footer>
+        <p>Made with <span>&#10084;</span> for Minecraft fans. <a href="https://www.minecraft.net/">Visit Minecraft</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('building-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('response').innerHTML = `<p>Behavior pack <strong>${result.behavior_pack}</strong> created successfully! <a href="/download/${result.behavior_pack}" target="_blank">Download here</a>.</p>`;
+                } else {
+                    document.getElementById('response').innerHTML = `<p style="color: red;">Error: ${result.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('response').innerHTML = `<p style="color: red;">An unexpected error occurred: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
